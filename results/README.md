@@ -1,173 +1,178 @@
-# Design and Performance Analysis of 16-Bit Vedic and Booth Multipliers Using MAC Unit
+# Design and Performance Analysis of 8-Bit Vedic and Booth Multipliers Using MAC Unit
 
 ## Overview
 
-This project presents the design and comparative performance analysis of two multiplier architectures integrated into a common Multiply-Accumulate (MAC) architecture:
+This project focuses on the design and performance analysis of **8-bit Vedic and Booth multiplier architectures integrated with a Multiply-Accumulate (MAC) unit**.
 
-* **16-bit Vedic Multiplier** based on the Urdhva-Tiryakbhyam algorithm
-* **16-bit Radix-4 Booth Multiplier**
+The objective is to compare the two multiplier architectures in terms of hardware complexity, area utilization, power consumption, and arithmetic performance.
 
-Both multiplier architectures are integrated with the same accumulation structure to enable a fair comparison of their hardware and performance characteristics.
+The designs are described using **Verilog HDL** and evaluated using a VLSI design flow involving **Cadence simulation and synthesis tools**.
 
-The designs are described using **Verilog HDL**, functionally verified using **Cadence SimVision**, and synthesized using **Cadence Genus** with the **TSMC 180 nm technology library**.
+## Objective
+
+The main objective of this project is to investigate the suitability of Vedic and Booth multiplication techniques for efficient MAC-based arithmetic hardware.
+
+The comparison focuses on:
+
+* Power consumption
+* Synthesized area
+* Logic cell utilization
+* Hardware complexity
+* Arithmetic performance
+* Switching activity
 
 ## MAC Architecture
 
-The MAC performs the operation:
+The MAC unit performs the operation:
 
 ```text
 MAC = (A × B) + Accumulator
 ```
 
-The architecture consists of three primary blocks:
+The architecture consists of:
 
 ```text
-16-bit Multiplicand ──┐
-                     │
-16-bit Multiplier ───┤
-                     ▼
-              ┌─────────────┐
-              │  Multiplier │
-              └──────┬──────┘
-                     │
-                 32-bit
-                  Product
-                     │
-                     ▼
-              ┌─────────────┐
-              │    Adder    │
-              └──────┬──────┘
-                     │
-                     ▼
-              ┌─────────────┐
-              │ Accumulator │
-              └──────┬──────┘
-                     │
-                     ▼
-                 MAC Output
+Input A ─────┐
+             │
+Input B ─────┤
+             ▼
+       ┌─────────────┐
+       │  Multiplier │
+       └──────┬──────┘
+              │
+              ▼
+       ┌─────────────┐
+       │    Adder    │
+       └──────┬──────┘
+              │
+              ▼
+       ┌─────────────┐
+       │ Accumulator │
+       └──────┬──────┘
+              │
+              ▼
+          MAC Output
 ```
 
-The same accumulation structure is used for both multiplier architectures.
+Two versions of the MAC architecture are implemented using different multiplier architectures.
 
-## 16-Bit Vedic Multiplier
+## Vedic Multiplier
 
 The Vedic multiplier uses the **Urdhva-Tiryakbhyam (Vertical and Crosswise)** multiplication technique.
 
-The architecture generates cross-products in parallel and combines them using adder circuits to produce the final **32-bit product**.
+The architecture generates multiplication terms using the Vedic multiplication approach and combines them through addition logic to obtain the multiplication result.
 
 ```text
-A[15:0] ──┐
-          │
-          ▼
-   Urdhva-Tiryakbhyam
-      Multiplication
-          │
-          ▼
-    Cross Products
-          │
-          ▼
-        Adders
-          │
-          ▼
-      P[31:0]
+Input A
+   │
+   ├──────────────┐
+   │              │
+Input B           │
+   │              ▼
+   └──────► Urdhva-Tiryakbhyam
+                  │
+                  ▼
+             Partial Products
+                  │
+                  ▼
+                Adders
+                  │
+                  ▼
+               Product
 ```
 
-## 16-Bit Radix-4 Booth Multiplier
+## Booth Multiplier
 
-The Booth multiplier uses **Radix-4 Booth encoding** to reduce the number of partial products generated during multiplication.
+The Booth multiplier uses **Booth recoding** to reduce the number of partial products involved in multiplication.
 
-The architecture is particularly suitable for signed multiplication and uses additional encoding and arithmetic logic for partial-product generation and accumulation.
+The architecture performs recoding and partial-product generation before the arithmetic addition stage.
 
 ```text
-A[15:0] ──┐
-          │
-B[15:0] ──┤
-          ▼
-    Radix-4 Encoding
-          │
-          ▼
- Partial Product Generation
-          │
-          ▼
-      Addition Logic
-          │
-          ▼
-      P[31:0]
+Input A
+   │
+Input B
+   │
+   ▼
+Booth Recoding
+   │
+   ▼
+Partial Product Generation
+   │
+   ▼
+Addition
+   │
+   ▼
+Product
 ```
 
-## Design and Verification Flow
+## Comparison Methodology
+
+Both multiplier architectures are integrated into MAC units using a common accumulation structure.
+
+This provides a common basis for comparing the hardware characteristics of the Vedic and Booth implementations.
 
 ```text
-Start
-  │
-  ▼
+             ┌── Vedic Multiplier ──┐
+Inputs ──────┤                      ├── Adder ── Accumulator
+             └── Booth Multiplier ──┘
+```
+
+## Design Flow
+
+```text
 Verilog HDL Design
-  │
-  ├── 16-bit Vedic Multiplier
-  │
-  └── 16-bit Booth Multiplier
-  │
-  ▼
+        │
+        ▼
+Vedic / Booth Multiplier
+        │
+        ▼
 MAC Integration
-  │
-  ▼
-Testbench Generation
-  │
-  ▼
+        │
+        ▼
+Testbench Development
+        │
+        ▼
 Cadence Simulation
-  │
-  ▼
+        │
+        ▼
 Waveform Verification
-  │
-  ▼
-Cadence Genus Synthesis
-  │
-  ▼
-Performance Analysis
-  │
-  ▼
-End
+        │
+        ▼
+Cadence Synthesis
+        │
+        ▼
+Area / Power / Cell Analysis
+        │
+        ▼
+Performance Comparison
 ```
 
 ## Verification
 
-The multiplier architectures were functionally verified using Verilog testbenches and Cadence SimVision waveform analysis.
+The multiplier architectures were functionally verified using Verilog testbenches and Cadence simulation.
 
-Example input combinations were used to verify multiplication functionality, including:
+Simulation waveforms were analyzed to verify the multiplication functionality and arithmetic operation of the designs.
 
-```text
-0A × 05 = 0032
-0C × 0C = 0090
-FF × 02 = 01FE
-32 × 32 = 0964
-```
+## VLSI Implementation
 
-The Booth architecture was also verified for signed multiplication.
+The designs were synthesized using the Cadence Genus environment with the TSMC 180 nm technology library used in the project.
 
-## Synthesis
+The synthesis analysis included:
 
-The designs were synthesized using:
-
-* **Synthesis Tool:** Cadence Genus
-* **Technology:** TSMC 180 nm
-* **HDL:** Verilog
-
-The synthesis analysis considers:
-
-* Cell area
-* Logic cell count
+* Standard-cell utilization
+* Synthesized area
 * Power consumption
 * Gate-level implementation
 * Hardware complexity
 
-## Results
+## Performance Results
 
-| Parameter                |   Vedic Multiplier | Booth Multiplier |
+| Parameter                |              Vedic |            Booth |
 | ------------------------ | -----------------: | ---------------: |
-| Multiplication Technique | Urdhva-Tiryakbhyam |    Radix-4 Booth |
-| Technology               |        TSMC 180 nm |      TSMC 180 nm |
-| Power                    |   2.05981 × 10⁻⁶ W | 5.52713 × 10⁻⁵ W |
-| Synthesized Area         |         76.507 µm² |     1190.851 µm² |
+| Multiplication Technique | Urdhva-Tiryakbhyam |            Booth |
+| Technology Library       |        TSMC 180 nm |      TSMC 180 nm |
+| Power Consumption        |   2.05981 × 10⁻⁶ W | 5.52713 × 10⁻⁵ W |
+| Synthesized Area         |             76.507 |         1190.851 |
 | Logic Cells              |                  7 |               80 |
 | Hardware Complexity      |                Low |             High |
 | Arithmetic Speed         |               High |         Moderate |
@@ -175,29 +180,33 @@ The synthesis analysis considers:
 | Power Efficiency         |             Better |            Lower |
 | Area Efficiency          |             Better |            Lower |
 
-According to the synthesis results, the Vedic multiplier demonstrated lower reported power consumption and synthesized area than the Booth implementation under the evaluated setup.
+## Simulation Results
 
-## Gate-Level Implementation
+### Vedic Multiplier
 
-The synthesized Vedic architecture uses standard cells including:
+Add the Cadence SimVision waveform here.
 
-* AND
-* NAND
-* NOR
-* AOI
+```text
+simulation/vedic_waveform.png
+```
 
-The Booth architecture uses a larger collection of standard cells, including:
+### Booth Multiplier
 
-* AOI
-* NAND
-* NOR
-* XOR
-* Inverters
-* Multiplexing logic
+Add the Cadence SimVision waveform here.
+
+```text
+simulation/booth_waveform.png
+```
+
+## Synthesis Results
+
+The synthesized designs were analyzed using Cadence Genus.
+
+The project includes gate-level schematic, area, power, and cell-utilization results for both multiplier architectures.
 
 ## Applications
 
-MAC architectures and efficient multiplier implementations are relevant to:
+MAC-based arithmetic units are widely relevant to:
 
 * Digital Signal Processing
 * Image Processing
@@ -207,20 +216,21 @@ MAC architectures and efficient multiplier implementations are relevant to:
 
 ## Future Scope
 
-Possible extensions include:
+Possible extensions of this work include:
 
-* 32-bit and 64-bit MAC architectures
-* Further delay optimization
-* Lower-power implementations
+* Higher-bit-width multiplier architectures
+* Delay optimization
+* Power optimization
 * FPGA-based validation
 * Comparison with Wallace Tree multipliers
 * Comparison with Dadda multipliers
 
 ## Tools and Technologies
 
-**HDL:** Verilog
-**Simulation:** Cadence SimVision
-**Synthesis:** Cadence Genus
-**Technology Library:** TSMC 180 nm
-**Architecture:** MAC
-**Multiplier Architectures:** Vedic and Radix-4 Booth
+* Verilog HDL
+* Cadence SimVision
+* Cadence Genus
+* TSMC 180 nm Technology Library
+* VLSI Design
+* Digital Arithmetic
+* MAC Architecture
