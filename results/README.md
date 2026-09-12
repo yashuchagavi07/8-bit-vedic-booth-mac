@@ -195,31 +195,6 @@ The Booth architecture uses a larger collection of standard cells, including:
 * Inverters
 * Multiplexing logic
 
-## Repository Structure
-
-```text
-16-bit-vedic-booth-mac/
-│
-├── README.md
-│
-├── rtl/
-│   ├── vedic_multiplier.v
-│   ├── booth_multiplier.v
-│   ├── mac_vedic.v
-│   └── mac_booth.v
-│
-├── testbench/
-│   ├── vedic_tb.v
-│   └── booth_tb.v
-│
-├── docs/
-│   ├── architecture.md
-│   └── design_flow.md
-│
-└── results/
-    └── README.md
-```
-
 ## Applications
 
 MAC architectures and efficient multiplier implementations are relevant to:
